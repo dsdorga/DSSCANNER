@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DS SCANNER - ID Card to A4 PDF</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script async src="opencv.js" onload="onOpenCvReady();" onerror="onOpenCvError();"></script>
+    <script async src="https://docs.opencv.org/4.11.0/opencv.js" onload="onOpenCvReady();" onerror="onOpenCvError();"></script>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
@@ -25,7 +25,7 @@
         
         /* ক্যানভাস ও ড্রাগেবল পয়েন্টের সিএসএস */
         #canvasContainer { position: relative; display: inline-block; max-height: 50vh; max-width: 100%; overflow: hidden; }
-        .drag-point { position: absolute; width: 26px; height: 26px; background-color: rgba(37, 99, 235, 0.85); border: 2px solid white; border-radius: 50%; cursor: move; transform: translate(-13px, -13px); z-index: 10; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .drag-point { position: absolute; width: 24px; height: 24px; background-color: rgba(37, 99, 235, 0.8); border: 2px solid white; border-radius: 50%; cursor: move; transform: translate(-12px, -12px); z-index: 10; box-shadow: 0 0 8px rgba(0,0,0,0.4); }
         .scale-ticks { height: 8px; background-image: repeating-linear-gradient(90deg, #94a3b8 0px, #94a3b8 1px, transparent 1px, transparent 8px); width: 100%; margin-top: 4px; opacity: 0.6; }
     </style>
 </head>
@@ -40,11 +40,11 @@
                 </div>
             </div>
             <h1 class="text-4xl font-extrabold text-gray-800 tracking-wider font-mono mt-2">DS SCANNER</h1>
-            <p class="text-blue-600 font-semibold mt-2 text-sm bg-blue-50 px-4 py-1 rounded-full inline-block">আইডিカード টু এ৪ পিডিএফ</p>
+            <p class="text-blue-600 font-semibold mt-2 text-sm bg-blue-50 px-4 py-1 rounded-full inline-block">আইডি কার্ড টু এ৪ পিডিএফ</p>
             
-            <div id="cvStatus" class="mt-6 text-xs font-semibold text-amber-600 bg-amber-50 px-4 py-2 rounded-xl inline-flex items-center space-x-2">
-                <span id="loaderIcon" class="animate-spin">⏳</span>
-                <span id="loaderText">OpenCV ইঞ্জিন লোড হচ্ছে, দয়া করে অপেক্ষা করুন...</span>
+            <div id="cvStatus" class="mt-6 text-xs font-semibold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg inline-flex items-center space-x-2">
+                <span class="animate-spin">⏳</span>
+                <span>OpenCV ইঞ্জিন লোড হচ্ছে, দয়া করে অপেক্ষা করুন...</span>
             </div>
         </div>
     </div>
@@ -74,7 +74,7 @@
                 <input type="file" id="frontInput" accept="image/*" class="hidden" />
                 <div id="frontActionGroup" class="hidden mt-2 flex space-x-2">
                     <button class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-1.5 rounded-lg transition" onclick="document.getElementById('frontInput').click()">🔄 পরিবর্তন</button>
-                    <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 rounded-lg shadow-sm transition" onclick="openCvModal('front')">📐 ৪ কোণা সোজা করুন</button>
+                    <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 rounded-lg shadow-sm transition" onclick="openCvModal('front')">⚙️ ৪ কোণা সোজা করুন</button>
                 </div>
             </div>
             
@@ -88,7 +88,7 @@
                 <input type="file" id="backInput" accept="image/*" class="hidden" />
                 <div id="backActionGroup" class="hidden mt-2 flex space-x-2">
                     <button class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-1.5 rounded-lg transition" onclick="document.getElementById('backInput').click()">🔄 পরিবর্তন</button>
-                    <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 rounded-lg shadow-sm transition" onclick="openCvModal('back')">📐 ৪ কোণা সোজা করুন</button>
+                    <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 rounded-lg shadow-sm transition" onclick="openCvModal('back')">⚙️ ৪ কোণা সোজা করুন</button>
                 </div>
             </div>
 
@@ -121,14 +121,14 @@
         <div class="bg-white rounded-2xl p-5 w-full max-w-lg flex flex-col shadow-2xl">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="text-base font-bold text-gray-800">📐 ৪ কোণা পার্সপেক্টিভ এডজাস্টমেন্ট</h3>
-                <span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded font-medium">Local OpenCV Engine</span>
+                <span class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-medium">OpenCV Engine</span>
             </div>
             
             <div class="bg-gray-950 rounded-xl overflow-hidden flex items-center justify-center border border-gray-800 p-2">
                 <div id="canvasContainer">
                     <canvas id="srcCanvas"></canvas>
                     <svg id="polySvg" class="absolute inset-0 w-full h-full pointer-events-none">
-                        <polygon id="svgPoly" points="" style="fill:rgba(37, 99, 235, 0.15); stroke:#2563eb; stroke-width:2.5; fill-rule:nonzero;" />
+                        <polygon id="svgPoly" points="" style="fill:rgba(37, 99, 235, 0.15); stroke:#2563eb; stroke-width:2; fill-rule:nonzero;" />
                     </svg>
                     <div id="p0" class="drag-point"></div>
                     <div id="p1" class="drag-point"></div>
@@ -137,16 +137,27 @@
                 </div>
             </div>
 
-            <div class="mt-4 bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-2">
-                <div class="flex justify-center space-x-3">
-                    <button type="button" class="bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 font-bold py-1.5 px-4 rounded-xl text-xs flex items-center space-x-1 shadow-sm transition active:scale-95" onclick="rotate90Canvas(-90)">
-                        <span>⟲</span> <span>Rotate Left</span>
-                    </button>
-                    <button type="button" class="bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 font-bold py-1.5 px-4 rounded-xl text-xs flex items-center space-x-1 shadow-sm transition active:scale-95" onclick="rotate90Canvas(90)">
-                        <span>⟳</span> <span>Rotate Right</span>
+            <div class="mt-4 bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-3">
+                <div>
+                    <div class="flex justify-between text-xs font-bold text-gray-600 mb-1">
+                        <span>কোণ সোজা করুন (Rotation)</span>
+                        <span id="sliderVal" class="text-blue-600">0°</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button type="button" class="bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 font-bold w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm transition" onclick="stepRotate(-1)">◀</button>
+                        <div class="flex-1">
+                            <input type="range" id="rotateSlider" min="-45" max="45" value="0" class="w-full accent-blue-600 h-2 bg-gray-200 rounded-lg cursor-pointer" oninput="rotateCanvasOnly(this.value)">
+                            <div class="scale-ticks"></div>
+                        </div>
+                        <button type="button" class="bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 font-bold w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-sm transition" onclick="stepRotate(1)">▶</button>
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <button type="button" class="bg-blue-50 border border-blue-200 text-blue-700 font-bold py-1 px-4 rounded-full text-xs flex items-center space-x-1 transition" onclick="rotate90Canvas()">
+                        <span>⟳</span> <span>Rotate 90°</span>
                     </button>
                 </div>
-                <p class="text-[10px] text-gray-400 text-center">💡 চারটি গোল বিন্দু টেনে নিখুঁតভাবে আইডি কার্ডের ৪টি কণার সাথে মিলিয়ে নিন।</p>
+                <p class="text-[10px] text-gray-400 text-center">💡 চারটি গোল বিন্দু টেনে নিখুঁতভাবে আইডি কার্ডের ৪টি কণার সাথে মিলিয়ে নিন।</p>
             </div>
 
             <div class="mt-5 flex justify-end space-x-2">
@@ -162,24 +173,22 @@
         let originalImages = { front: '', back: '' };
         
         let imgElement = new Image();
-        let pts = []; 
+        let pts = []; // ৪টি পয়েন্ট ট্র‍্যাক রাখার অ্যারে
         let activePoint = null;
         let startX, startY;
-        let currentRotation = 0; // ছবি কত ডিগ্রি ঘোরেল আছে তা ট্র্যাক রাখার জন্য
+        let currentCanvasAngle = 0;
 
-        // OpenCV লোকাল ফাইল সফলভাবে লোড হলে এই ফাংশনটি রান হবে
+        // OpenCV লোড সফল হলে কল হবে
         function onOpenCvReady() {
             isOpenCvReady = true;
-            document.getElementById('loaderIcon').innerText = "✅";
-            document.getElementById('loaderText').innerHTML = "ইঞ্জিন পুরোপুরি রেডি! প্রবেশ করতে টাচ করুন।";
-            
+            document.getElementById('cvStatus').innerHTML = "✅ OpenCV ইঞ্জিন রেডি! প্রবেশ করুন।";
             const badge = document.getElementById('engineBadge');
-            badge.innerText = "OpenCV Local Ready";
+            badge.innerText = "OpenCV Ready";
             badge.className = "text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded-md";
         }
 
         function onOpenCvError() {
-            document.getElementById('loaderText').innerHTML = "❌ opencv.js ফাইলটি খুঁজে পাওয়া যায়নি! ফাইলটি index.html এর পাশে রাখুন।";
+            document.getElementById('cvStatus').innerHTML = "❌ ইঞ্জিন লোড হতে ব্যর্থ হয়েছে। পেজ রিফ্রেশ করুন।";
         }
 
         function hideSplash() {
@@ -220,64 +229,54 @@
             }
         }
 
+        // OpenCV এডিট মোডাল ওপেন
         function openCvModal(target) {
             if (!originalImages[target]) return;
             currentTarget = target;
-            currentRotation = 0; // প্রতিবার নতুন করে ওপেন করলে রোটেশন জিরো হবে
+            currentCanvasAngle = 0;
+            document.getElementById('rotateSlider').value = 0;
+            document.getElementById('sliderVal').innerText = "0°";
 
             const modal = document.getElementById('opencvModal');
             modal.classList.remove('hidden');
 
             imgElement.src = originalImages[target];
             imgElement.onload = function() {
-                drawCanvasWithRotation();
+                initCanvasAndPoints();
             }
         }
 
-        // ছবি ঘোরানোসহ ক্যানভাস ড্র করার নতুন ফাংশন
-        function drawCanvasWithRotation() {
+        // ক্যানভাস ও ৪টি কোণার পয়েন্ট প্রারম্ভিক পজিশন সেট করা
+        function initCanvasAndPoints() {
             const canvas = document.getElementById('srcCanvas');
             const ctx = canvas.getContext('2d');
             
-            let maxW = Math.min(window.innerWidth - 60, 420);
-            
-            // ৯০ বা ২৭০ ডিগ্রি ঘুরলে উইডথ আর হাইট অদলবদল হবে
-            let is90 = (currentRotation % 180 !== 0);
-            let origW = is90 ? imgElement.height : imgElement.width;
-            let origH = is90 ? imgElement.width : imgElement.height;
-            
-            let scale = maxW / origW;
-            if(origH * scale > window.innerHeight * 0.45) {
-                scale = (window.innerHeight * 0.45) / origH;
+            // রেসপনসিভ সাইজ নির্ধারণ
+            let maxW = Math.min(window.innerWidth - 60, 450);
+            let scale = maxW / imgElement.width;
+            if(imgElement.height * scale > window.innerHeight * 0.45) {
+                scale = (window.innerHeight * 0.45) / imgElement.height;
             }
             
-            canvas.width = origW * scale;
-            canvas.height = origH * scale;
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
-            
-            // ক্যানভাসের মাঝখানে ট্রান্সলেট করে ঘোরানো
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.rotate((currentRotation * Math.PI) / 180);
-            
-            // ছবি ড্র করা
-            ctx.drawImage(imgElement, -imgElement.width * scale / 2, -imgElement.height * scale / 2, imgElement.width * scale, imgElement.height * scale);
-            ctx.restore();
+            canvas.width = imgElement.width * scale;
+            canvas.height = imgElement.height * scale;
+            ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
 
-            // ডিফল্ট ৪টি পয়েন্ট রিসেট করা
             let w = canvas.width;
             let h = canvas.height;
+
+            // ৪টি পয়েন্টকে আইডি কার্ডের মতো একটি আনুমানিক চারকোনা বক্সে ডিফল্ট সেট করা
             pts = [
-                {x: w * 0.15, y: h * 0.15}, 
-                {x: w * 0.85, y: h * 0.15}, 
-                {x: w * 0.85, y: h * 0.85}, 
-                {x: w * 0.15, y: h * 0.85}  
+                {x: w * 0.15, y: h * 0.15}, // Top-Left
+                {x: w * 0.85, y: h * 0.15}, // Top-Right
+                {x: w * 0.85, y: h * 0.85}, // Bottom-Right
+                {x: w * 0.15, y: h * 0.85}  // Bottom-Left
             ];
 
             updatePointsUI();
         }
 
+        // বিন্দুর অবস্থান স্ক্রিনে আপডেট করা এবং নীল বর্ডার লাইন আঁকা
         function updatePointsUI() {
             pts.forEach((p, i) => {
                 const el = document.getElementById('p' + i);
@@ -289,7 +288,7 @@
             poly.setAttribute('points', `${pts[0].x},${pts[0].y} ${pts[1].x},${pts[1].y} ${pts[2].x},${pts[2].y} ${pts[3].x},${pts[3].y}`);
         }
 
-        // টাচ এবং মাউস ড্রাগ লজিক
+        // পয়েন্ট ড্রাগ অ্যান্ড ড্রপ হ্যান্ডলার (মোবাইল টাচ এবং মাউস দুইটার জন্যই)
         document.querySelectorAll('.drag-point').forEach(el => {
             el.addEventListener('mousedown', startDrag);
             el.addEventListener('touchstart', startDrag, {passive: false});
@@ -323,6 +322,7 @@
             let x = clientX - rect.left;
             let y = clientY - rect.top;
 
+            // ক্যানভাসের বাইরে যাওয়া লক করা
             x = Math.max(0, Math.min(x, container.clientWidth));
             y = Math.max(0, Math.min(y, container.clientHeight));
 
@@ -339,40 +339,56 @@
             document.removeEventListener('touchmove', dragMove);
         }
 
-        // ছবি ৯০ ডিগ্রি ডানে বা বামে ঘোরানোর বাটন লজিক
-        function rotate90Canvas(degree) {
-            currentRotation = (currentRotation + degree) % 360;
-            if (currentRotation < 0) currentRotation += 360;
-            drawCanvasWithRotation();
+        // ছবি শুধু ক্যানভাসে ঘোরানোর মেকানিজম (OpenCV প্রসেসের আগে জাস্ট ডিসপ্লে সোজা করার জন্য)
+        function rotateCanvasOnly(deg) {
+            // আপাতত লাইভ প্রিভিউ এングル ট্র‍্যাক রাখছে
+            document.getElementById('sliderVal').innerText = (parseInt(deg) + currentCanvasAngle) + "°";
+        }
+
+        function stepRotate(val) {
+            const slider = document.getElementById('rotateSlider');
+            let next = parseInt(slider.value) + val;
+            if(next >= -45 && next <= 45) {
+                slider.value = next;
+                rotateCanvasOnly(next);
+            }
+        }
+
+        function rotate90Canvas() {
+            currentCanvasAngle += 90;
+            document.getElementById('sliderVal').innerText = currentCanvasAngle + "°";
+            // ক্যানভাস কনটেইনার সিএসএস দিয়ে ৯০ ডিগ্রি ঘুরিয়ে ইউজারকে রিয়েল-টাইমে সোজা দেখাবে
+            document.getElementById('srcCanvas').style.transform = `rotate(${currentCanvasAngle}deg)`;
         }
 
         // =========================================================
-        // 🔮 ৪ কোণা সোজা করার OpenCV কোড
+        // 🔮 মেইন OPENCV.JS ম্যাজিক: ৪ কোণা সোজা করার ফর্মুলা
         // =========================================================
         function processPerspective() {
             if (!isOpenCvReady) {
-                alert("OpenCV ইঞ্জিন এখনো পুরোপুরি রেডি হয়নি!");
+                alert("OpenCV এখনো পুরোপুরি লোড হয়নি, দয়া করে একটু অপেক্ষা করুন!");
                 return;
             }
 
-            // ১. ক্যানভাস থেকে বর্তমান ডিসপ্লে হওয়া ছবি ম্যাট্রিক্সে নেওয়া
+            // ১. ক্যানভাস থেকে মেইন ইমেজ ম্যাট্রিক্স তৈরি
             let src = cv.imread('srcCanvas');
             let dst = new cv.Mat();
             
-            // আইডি কার্ডের এ৪ পেজ রেশিও সাইজ (৮৫:৫৫)
+            // আইডি কার্ডের স্ট্যান্ডার্ড এ৪ পেজ রেশিও সাইজ (৮৫:৫৫ রেশিও অনুযায়ী বড় রেজোলিউশন)
             let targetW = 1012;
             let targetH = 638;
+            
             let dsize = new cv.Size(targetW, targetH);
 
-            // ২. ৪টি পয়েন্টের কোঅর্ডিনেট নেওয়া
+            // ২. ইউজারের দেওয়া ৪টি পয়েন্টের কোঅর্ডিনেট OpenCV ফরম্যাটে নেওয়া
             let srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
-                pts[0].x, pts[0].y, 
-                pts[1].x, pts[1].y, 
-                pts[2].x, pts[2].y, 
-                pts[3].x, pts[3].y  
+                pts[0].x, pts[0].y, // Top Left
+                pts[1].x, pts[1].y, // Top Right
+                pts[2].x, pts[2].y, // Bottom Right
+                pts[3].x, pts[3].y  // Bottom Left
             ]);
 
-            // ৩. টার্গেট সোজা ফ্রেম পজিশন
+            // ৩. টার্গেট ৪টি সোজা কোণার ম্যাপিং পজিশন
             let dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
                 0, 0,
                 targetW, 0,
@@ -380,15 +396,16 @@
                 0, targetH
             ]);
 
-            // ৪. OpenCV ওয়ার্প পার্সপেক্টিভ রান করা
+            // ৪. পার্সপেক্টিভ ম্যাট্রিক্স ক্যালকুলেশন ও ওয়ার্পিং (ম্যাজিক লাইন)
             let M = cv.getPerspectiveTransform(srcTri, dstTri);
             cv.warpPerspective(src, dst, M, dsize, cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
 
-            // ৫. রেজাল্ট প্রিভিউতে পাঠানো
+            // ৫. রেজাল্ট একটি কাস্টম ক্যানভাসে নিয়ে ডাটা ইউআরএল তৈরি
             let resultCanvas = document.createElement('canvas');
             cv.imshow(resultCanvas, dst);
             const finalDataURL = resultCanvas.toDataURL('image/jpeg', 0.95);
 
+            // ৬. ভিউ স্ক্রিনে ইমেজ সেট করা
             const viewImg = document.getElementById(`${currentTarget}View`);
             const textPlaceholder = document.getElementById(`${currentTarget}Text`);
 
@@ -398,7 +415,7 @@
             
             document.getElementById(`${currentTarget}Thumb`).src = finalDataURL;
 
-            // মেমোরি ফ্রি করা
+            // মেমোরি খালি করার জন্য ওপেনসিভি ম্যাট্রিক্স ডিলিট করা (খুবই গুরুত্বপূর্ণ)
             src.delete(); dst.delete(); M.delete(); srcTri.delete(); dstTri.delete();
 
             closeCvModal();
@@ -407,6 +424,7 @@
 
         function closeCvModal() {
             document.getElementById('opencvModal').classList.add('hidden');
+            document.getElementById('srcCanvas').style.transform = 'none';
         }
 
         function checkReadyState() {
@@ -422,7 +440,7 @@
         }
 
         function resetApp() {
-            location.reload(); 
+            location.reload(); // রিলোড দিলে OpenCV ক্যাশ থেকে দ্রুত এসে সবকিছু ক্লিন রিসেট হবে
         }
     </script>
 </body>
